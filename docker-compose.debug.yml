@@ -1,0 +1,8 @@
+version: '3.4'
+
+services:
+  group3asm:
+    image: group3asm
+    build:
+      context: .
+      dockerfile: ./Dockerfile
