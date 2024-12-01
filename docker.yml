@@ -1,0 +1,46 @@
+---
+- name: Deploy website as a Docker container
+  hosts: all
+  become: true
+
+  vars:
+    docker_image_name: "sysad-webapp-image"
+    docker_container_name: "sysad-webapp-container"
+    website_directory: "/tmp/css_website"
+    docker_port: 8080
+
+  tasks:
+    - name: Ensure Docker is started and enabled
+      systemd:
+        name: docker
+        state: started
+        enabled: true
+
+    - name: Ensure port is open in the firewall
+      ufw:
+        rule: allow
+        port: "{{ docker_port }}"
+        proto: tcp
+
+    - name: Copy website files to remote host
+      copy:
+        src: ./  
+        dest: "{{ website_directory }}"
+        remote_src: no
+
+    - name: Remove existing container with the same name
+      command: docker rm "{{ docker_container_name }}"
+      ignore_errors: true
+
+    - name: Build Docker image
+      command: docker build -t "{{ docker_image_name }}" .
+      args:
+        chdir: "{{ website_directory }}"
+
+    - name: Run Docker container
+      command: docker run -d --name "{{ docker_container_name }}" -p {{ docker_port }}:80 "{{ docker_image_name }}"
+
+    - name: Clean up website files from remote host
+      file:
+        path: "{{ website_directory }}"
+        state: absent

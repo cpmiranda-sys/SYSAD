@@ -1,0 +1,4 @@
+[FINAL]
+server1
+192.168.56.109 ansible_user=cmiranda
+
