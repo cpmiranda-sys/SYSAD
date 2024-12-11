@@ -6,8 +6,6 @@
   vars:
     docker_image_name: "webapp-image"
     docker_container_name: "webapp-container"
-    website_directory: "/tmp/website"
-    docker_port: 8080
 
   tasks:
     - name: Start and enable docker
@@ -19,19 +17,19 @@
     - name: Open Port in the firewall
       ufw:
         rule: allow
-        port: "{{ docker_port }}"
+        port: 8080
         proto: tcp
 
     - name: Copy website files to Ubuntu and Centos servers
       copy:
         src: ./  
-        dest: "{{ website_directory }}"
+        dest: /tmp/website
         remote_src: no
 
     - name: Build Docker image 
       command: docker build -t "{{ docker_image_name }}" .
       args:
-        chdir: "{{ website_directory }}"
+        chdir: /tmp/website
 
     - name: Run Docker container
       command: docker run -d --name "{{ docker_container_name }}" -p {{ docker_port }}:80 "{{ docker_image_name }}"
