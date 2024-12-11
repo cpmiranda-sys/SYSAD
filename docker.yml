@@ -32,6 +32,6 @@
         chdir: /tmp/website
 
     - name: Run Docker container
-      command: docker run -d --name "{{ docker_container_name }}" -p {{ docker_port }}:80 "{{ docker_image_name }}"
+      command: docker run -d --name "{{ docker_container_name }}" -p 8080:80 "{{ docker_image_name }}"
 
 
